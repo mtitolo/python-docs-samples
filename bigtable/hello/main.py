@@ -88,6 +88,7 @@ def main(project_id, instance_id, table_id):
     # Create a filter to only retrieve the most recent version of the cell
     # for each column accross entire row.
     row_filter = row_filters.CellsColumnLimitFilter(1)
+    row_key_filter = row_filters.RowKeyRegexFilter("greeting*")
     # [END creating_a_filter]
 
     # [START getting_a_row]
@@ -102,6 +103,13 @@ def main(project_id, instance_id, table_id):
     # [START scanning_all_rows]
     print('Scanning for all greetings:')
     partial_rows = table.read_rows(filter_=row_filter)
+
+    for row in partial_rows:
+        cell = row.cells[column_family_id][column][0]
+        print(cell.value.decode('utf-8'))
+
+    print('Scanning for greetings by RowKeyRegex:')
+    partial_rows = table.read_rows(filter_=row_key_filter)
 
     for row in partial_rows:
         cell = row.cells[column_family_id][column][0]
